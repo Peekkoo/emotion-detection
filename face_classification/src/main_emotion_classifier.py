@@ -91,7 +91,7 @@ def process():
 
     if os.path.exists(frames_dir):
         shutil.rmtree(frames_dir)
-.
+
     return output, get_most_frequent_emotion(output)
 
 
