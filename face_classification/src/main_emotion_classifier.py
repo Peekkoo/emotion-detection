@@ -48,6 +48,8 @@ def process():
 
     output = []
     outputConf = []
+    outputConfInt = -1
+
     for image_path_, image_path in enumerate(images_list):
         # loading images
         gray_image = load_image(image_path, grayscale=True)
@@ -81,10 +83,18 @@ def process():
             tmp.append(emotion_text)
             tmpConf.append(confidence)
 
-        output.append(tmp)
-        outputConf.append(tmpConf)
-        outputConf = np.mean(outputConf)
-        outputConfInt = int(100*outputConf)
+        if tmpConf:
+            output.append(tmp)
+            outputConf.append(tmpConf)
+        else:
+            output.append(['none'])
+
+    # Calculate outputConfInt based on accumulated outputConf
+    if outputConf:
+        outputConf = np.mean([np.mean(conf_list) for conf_list in outputConf])
+        outputConfInt = int(100 * outputConf)
+    else:
+        outputConfInt = -1  # Set fallback if no confidence values exist
 
     if os.path.exists(frames_dir):
         shutil.rmtree(frames_dir)
@@ -94,16 +104,12 @@ def process():
 
 if __name__ == "__main__":
     output, outputConf = process()
-
-    OneD_output = [item for sublist in output for item in sublist]
-    
-    
-    log_content = f"{outputConf}\n"  
-    log_content += '\n'.join(OneD_output)  # Add each emotion on a new line
-
-    # Write to a log file
-    with open("oemotion.log", "w") as log_file:
-        log_file.write(log_content)
-
-    print("Log file created successfully!")
-
+    if len(output)>0:
+        OneD_output = [item for sublist in output for item in sublist]
+        log_content = f"{outputConf}\n"  
+        log_content += '\n'.join(OneD_output)  # Add each emotion on a new line
+        with open("oemotion.log", "w") as log_file:
+            log_file.write(log_content)
+        print("Log file created successfully!")
+    else:
+        print("No data")
