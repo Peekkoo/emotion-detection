@@ -104,7 +104,7 @@ def process():
 
 if __name__ == "__main__":
     output, outputConf = process()
-    if len(output)>0:
+    if (outputConf != -1):
         OneD_output = [item for sublist in output for item in sublist]
         log_content = f"{outputConf}\n"  
         log_content += '\n'.join(OneD_output)  # Add each emotion on a new line
