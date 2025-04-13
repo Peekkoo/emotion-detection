@@ -16,19 +16,6 @@ from utils.inference import load_image
 from utils.preprocessor import preprocess_input
 
 
-def most_frequent(List):
-    return max(set(List), key=List.count)
-
-
-def get_most_frequent_emotion(dict_):
-
-    emotions = []
-    for frame_nmr in dict_.keys():
-        for face_nmr in dict_[frame_nmr].keys():
-            emotions.append(dict_[frame_nmr][face_nmr]['emotion'])
-
-    return most_frequent(emotions)
-
 
 def process():
 
@@ -59,7 +46,8 @@ def process():
         os.system('ffmpeg -i {} {}/$frame_%010d.jpg'.format(image_path, frames_dir))
         images_list = [os.path.join(frames_dir, f) for f in sorted(os.listdir(frames_dir))]
 
-    output = {}
+    output = []
+    outputConf = []
     for image_path_, image_path in enumerate(images_list):
         # loading images
         gray_image = load_image(image_path, grayscale=True)
@@ -68,7 +56,8 @@ def process():
 
         faces = detect_faces(face_detection, gray_image)
 
-        tmp = {}
+        tmp = []
+        tmpConf = []
         for face_coordinates_, face_coordinates in enumerate(faces):
 
             x1, x2, y1, y2 = apply_offsets(face_coordinates, emotion_offsets)
@@ -82,23 +71,29 @@ def process():
             gray_face = preprocess_input(gray_face, True)
             gray_face = np.expand_dims(gray_face, 0)
             gray_face = np.expand_dims(gray_face, -1)
-            emotion_label_arg = np.argmax(emotion_classifier.predict(gray_face))
-            emotion_text = emotion_labels[emotion_label_arg]
 
-            tmp[face_coordinates_] = {'emotion': emotion_text, 'score': np.amax(emotion_classifier.predict(gray_face))}
 
-        output[image_path_] = tmp
+            predictions = emotion_classifier.predict(gray_face)
+            emotion_label_arg = np.argmax(predictions)  # Get predicted emotion index
+            emotion_text = emotion_labels[emotion_label_arg]  # Get emotion label
+            confidence = predictions[0][emotion_label_arg]  # Get confidence for the predicted emotion
+
+            tmp.append(emotion_text)
+            tmpConf.append(confidence)
+
+        output.append(tmp)
+        outputConf.append(tmpConf)
 
     if os.path.exists(frames_dir):
         shutil.rmtree(frames_dir)
 
-    return output, get_most_frequent_emotion(output)
+    return output, outputConf
 
 
 if __name__ == "__main__":
-    output, most_frequent_emotion = process()
+    output, outputConf = process()
 
-    for key in output.keys():
-        print(output[key])
+    for i in range(len(output)):
+        print(output[i])
+        print(outputConf[i])
 
-    print(most_frequent_emotion)
