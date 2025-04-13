@@ -9,4 +9,6 @@ scipy
 matplotlib
 imageio
 scikit-image
+pywin32
+
 
