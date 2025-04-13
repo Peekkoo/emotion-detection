@@ -6,16 +6,31 @@ import cv2
 from keras.models import load_model
 import numpy as np
 
-from utils.datasets import get_labels
 from utils.inference import detect_faces
 from utils.inference import draw_text
 from utils.inference import draw_bounding_box
 from utils.inference import apply_offsets
 from utils.inference import load_detection_model
 from utils.inference import load_image
-from utils.preprocessor import preprocess_input
 
+def get_labels(dataset_name):
+    if dataset_name == 'fer2013':
+        return {0: 'angry', 1: 'disgust', 2: 'fear', 3: 'happy',
+                4: 'sad', 5: 'surprise', 6: 'neutral'}
+    elif dataset_name == 'imdb':
+        return {0: 'woman', 1: 'man'}
+    elif dataset_name == 'KDEF':
+        return {0: 'AN', 1: 'DI', 2: 'AF', 3: 'HA', 4: 'SA', 5: 'SU', 6: 'NE'}
+    else:
+        raise Exception('Invalid dataset name')
 
+def preprocess_input(x, v2=True):
+    x = x.astype('float32')
+    x = x / 255.0
+    if v2:
+        x = x - 0.5
+        x = x * 2.0
+    return x
 
 def process():
 
