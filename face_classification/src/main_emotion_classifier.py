@@ -83,17 +83,22 @@ def process():
 
         output.append(tmp)
         outputConf.append(tmpConf)
+        outputConf = np.mean(outputConf)
+        outputConfInt = int(100*outputConf)
 
     if os.path.exists(frames_dir):
         shutil.rmtree(frames_dir)
 
-    return output, outputConf
+    return output, outputConfInt
 
 
 if __name__ == "__main__":
     output, outputConf = process()
 
-    for i in range(len(output)):
-        print(output[i])
-        print(outputConf[i])
+    OneD_output = [item for sublist in output for item in sublist]
+    
+    print(outputConf)
+    for item in OneD_output:
+        print(item)
+    
 
