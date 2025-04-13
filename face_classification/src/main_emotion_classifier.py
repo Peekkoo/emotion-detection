@@ -97,8 +97,13 @@ if __name__ == "__main__":
 
     OneD_output = [item for sublist in output for item in sublist]
     
-    print(outputConf)
-    for item in OneD_output:
-        print(item)
     
+    log_content = f"{outputConf}\n"  
+    log_content += '\n'.join(OneD_output)  # Add each emotion on a new line
+
+    # Write to a log file
+    with open("oemotion.log", "w") as log_file:
+        log_file.write(log_content)
+
+    print("Log file created successfully!")
 
