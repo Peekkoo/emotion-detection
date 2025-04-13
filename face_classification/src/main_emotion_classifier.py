@@ -34,8 +34,8 @@ def process():
 
     # parameters for loading data and images
     image_path = sys.argv[1]
-    detection_model_path = '../trained_models/haarcascade_frontalface_default.xml'
-    emotion_model_path = '../trained_models/fer2013_mini_XCEPTION.102-0.66.hdf5'
+    detection_model_path = "C:/Users/lifei/Downloads/haarcascade_frontalface_default.xml"
+    emotion_model_path = 'C:/Users/lifei/Downloads/fer2013_mini_XCEPTION.102-0.66.hdf5'
     emotion_labels = get_labels('fer2013')
     font = cv2.FONT_HERSHEY_SIMPLEX
 
